@@ -6,13 +6,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.RemoteControlClient;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
+import android.media.session.PlaybackState;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.MediaColumns;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -31,6 +35,7 @@ public class MusicUtil {
 	private static MediaSession mediaSession = null;
 	private static MediaController mediaController =null;
 	private static MediaMetadata.Builder mbuilder = null;
+	public static  boolean isChanging=false;
 
 	public static ArrayList<Music> getDataMusic(Context context){
 		list = new ArrayList<Music>();
@@ -149,10 +154,32 @@ public class MusicUtil {
 		return m+":"+n;
 	}
 
-	public static void setMusicbar(android.os.Handler handler, TextView textview,Context context){
+	public static void setMusicbar(android.os.Handler handler, TextView textview, Context context, SeekBar seekBar){
 		mhandler = handler;
 		mTextView = textview;
 		mcontext = context;
+		seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				isChanging = true;
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				System.out.println("HTC Music seekbar "+seekBar.getProgress());
+				mediaPlayer.seekTo(seekBar.getProgress()*mediaPlayer.getDuration()/seekBar.getMax());
+
+				PlaybackState.Builder  mbuilder = new PlaybackState.Builder();
+				PlaybackState pstate2 = mbuilder.setState(mediaPlayer.isPlaying()?RemoteControlClient.PLAYSTATE_PLAYING: RemoteControlClient.PLAYSTATE_STOPPED,seekBar.getProgress()*mediaPlayer.getDuration()/seekBar.getMax(),mediaPlayer.getPlaybackParams().getSpeed() ).build();
+				mediaSession.setPlaybackState(pstate2);
+				isChanging = false;
+
+			}
+		});
 		mediaSession = new MediaSession(mcontext, "MyMediaSession");
 		mediaController = mediaSession.getController();
 		mbuilder = new MediaMetadata.Builder();
@@ -172,7 +199,6 @@ public class MusicUtil {
 		mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
 		mediaSession.setActive(true);
 		mediaSession.setMetadata(mediaMetadata);
-
 		System.out.println("HTC Music  "+ mcontext +  mediaController.getMetadata().getLong(MediaMetadata.METADATA_KEY_DURATION)
 				+ mediaController.getMetadata().getString(MediaMetadata.METADATA_KEY_TITLE));
 

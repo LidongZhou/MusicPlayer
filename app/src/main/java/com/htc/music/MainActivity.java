@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         MusicSeekbar = (SeekBar) findViewById(R.id.htcMusicSeekBar);
       //  MusicSeekbar.setVisibility(View.GONE);
-        MusicUtil.setMusicbar(mHandler,musicNameView,this);
+        MusicUtil.setMusicbar(mHandler,musicNameView,this,MusicSeekbar);
 
         Musiclist =(ListView)findViewById(R.id.htcMusicList);
         Musiclist.setBackgroundColor(Color.WHITE);
@@ -78,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what){
                 case 0:
                     //更新进度
+                    if(MusicUtil.isChanging==true) {
+                        mHandler.sendEmptyMessage(0);
+                        break;
+                    }
                     int position = MusicUtil.getMediaPlayer().getCurrentPosition();
 
                     int time = MusicUtil.getMediaPlayer().getDuration();
