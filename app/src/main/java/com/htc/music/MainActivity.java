@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView Musiclist;
     private Intent intentService = null;
     private SeekBar MusicSeekbar =null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +32,14 @@ public class MainActivity extends AppCompatActivity {
 
         MusicSeekbar = (SeekBar) findViewById(R.id.htcMusicSeekBar);
       //  MusicSeekbar.setVisibility(View.GONE);
-        MusicUtil.setMusicbar(mHandler,musicNameView);
-
-
+        MusicUtil.setMusicbar(mHandler,musicNameView,this);
 
         Musiclist =(ListView)findViewById(R.id.htcMusicList);
-
         Musiclist.setBackgroundColor(Color.WHITE);
         SimpleAdapter adapter = new SimpleAdapter(this, getMusicData(),R.layout.music_list,
                 new String[]{"name","singer","time"},
                 new int[]{R.id.name,R.id.singer,R.id.time});
         Musiclist.setAdapter(adapter);
-
         Musiclist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -52,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
                 bundle.putInt("position", position);
                 intentService.putExtra("bundle", bundle);
-                startService(intentService);
-               // mHandler.sendEmptyMessage(0);
+
+               startService(intentService);
 
             }
         });

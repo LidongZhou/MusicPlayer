@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.session.MediaController;
+import android.media.session.MediaSession;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
@@ -24,7 +27,7 @@ public class MusicUtil {
 
 	private static android.os.Handler mhandler = null;
 	private static TextView mTextView  = null;
-
+	private static  Context mcontext = null;
 	public static ArrayList<Music> getDataMusic(Context context){
 		list = new ArrayList<Music>();
 		ContentResolver cr = context.getContentResolver();
@@ -79,7 +82,10 @@ public class MusicUtil {
 		musicCount = list.size();
 		return list;
 	}
-	
+
+
+
+
 	public static MediaPlayer play(int position){
 		Music music = list.get(position);
 		if(mediaPlayer==null){
@@ -96,7 +102,7 @@ public class MusicUtil {
 				e.printStackTrace();
 			}
     	}
-
+		updateMetaData(music);
 		mediaPlayer.start();
 		if(mTextView != null)
 			mTextView.setText(music.getName());
@@ -139,11 +145,30 @@ public class MusicUtil {
 		return m+":"+n;
 	}
 
-	public static void setMusicbar(android.os.Handler handler, TextView textview){
+	public static void setMusicbar(android.os.Handler handler, TextView textview,Context context){
 		mhandler = handler;
 		mTextView = textview;
+		mcontext = context;
 	}
 	public static MediaPlayer getMediaPlayer( ){
 		return  mediaPlayer;
+	}
+
+
+	public static void updateMetaData(Music music) {
+
+
+	    MediaSession mediaSession = new MediaSession(mcontext, "MyMediaSession");
+		MediaController mediaController = mediaSession.getController();
+		MediaMetadata.Builder mbuilder = new MediaMetadata.Builder();
+		mbuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, music.getSize());
+		mbuilder.putString(MediaMetadata.METADATA_KEY_TITLE,music.getName());
+		MediaMetadata mediaMetadata = mbuilder.build();
+		mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
+		mediaSession.setActive(true);
+		mediaSession.setMetadata(mediaMetadata);
+		System.out.println("HTC Music  "+ mediaController.getMetadata().getLong(MediaMetadata.METADATA_KEY_DURATION)
+				+ mediaController.getMetadata().getString(MediaMetadata.METADATA_KEY_TITLE));
+
 	}
 }
