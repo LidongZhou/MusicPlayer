@@ -28,6 +28,10 @@ public class MusicUtil {
 	private static android.os.Handler mhandler = null;
 	private static TextView mTextView  = null;
 	private static  Context mcontext = null;
+	private static MediaSession mediaSession = null;
+	private static MediaController mediaController =null;
+	private static MediaMetadata.Builder mbuilder = null;
+
 	public static ArrayList<Music> getDataMusic(Context context){
 		list = new ArrayList<Music>();
 		ContentResolver cr = context.getContentResolver();
@@ -149,6 +153,9 @@ public class MusicUtil {
 		mhandler = handler;
 		mTextView = textview;
 		mcontext = context;
+		mediaSession = new MediaSession(mcontext, "MyMediaSession");
+		mediaController = mediaSession.getController();
+		mbuilder = new MediaMetadata.Builder();
 	}
 	public static MediaPlayer getMediaPlayer( ){
 		return  mediaPlayer;
@@ -157,17 +164,14 @@ public class MusicUtil {
 
 	public static void updateMetaData(Music music) {
 
-
-	    MediaSession mediaSession = new MediaSession(mcontext, "MyMediaSession");
-		MediaController mediaController = mediaSession.getController();
-		MediaMetadata.Builder mbuilder = new MediaMetadata.Builder();
 		mbuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, music.getSize());
 		mbuilder.putString(MediaMetadata.METADATA_KEY_TITLE,music.getName());
 		MediaMetadata mediaMetadata = mbuilder.build();
 		mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
 		mediaSession.setActive(true);
 		mediaSession.setMetadata(mediaMetadata);
-		System.out.println("HTC Music  "+ mediaController.getMetadata().getLong(MediaMetadata.METADATA_KEY_DURATION)
+
+		System.out.println("HTC Music  "+ mcontext +  mediaController.getMetadata().getLong(MediaMetadata.METADATA_KEY_DURATION)
 				+ mediaController.getMetadata().getString(MediaMetadata.METADATA_KEY_TITLE));
 
 	}
