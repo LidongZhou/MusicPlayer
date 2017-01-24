@@ -164,8 +164,10 @@ public class MusicUtil {
 
 	public static void updateMetaData(Music music) {
 
-		mbuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, music.getSize());
+		mbuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, music.getTime());
 		mbuilder.putString(MediaMetadata.METADATA_KEY_TITLE,music.getName());
+		mbuilder.putString(MediaMetadata.METADATA_KEY_ARTIST,music.getSinger());
+		mbuilder.putString(MediaMetadata.METADATA_KEY_ALBUM,music.getAlbum());
 		MediaMetadata mediaMetadata = mbuilder.build();
 		mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
 		mediaSession.setActive(true);
