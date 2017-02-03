@@ -27,7 +27,6 @@ public class MusicUtil {
 	public static MediaPlayer mediaPlayer = null ;
 	public static int musicCount = 0 ;
 	public static String mode = "顺序播放";
-	private static Activity mactivy = null;
 
 	private static android.os.Handler mhandler = null;
 	private static TextView mTextView  = null;
@@ -36,6 +35,7 @@ public class MusicUtil {
 	private static MediaController mediaController =null;
 	private static MediaMetadata.Builder mbuilder = null;
 	public static  boolean isChanging=false;
+	public static  int  musicPosition = 0;
 
 	public static ArrayList<Music> getDataMusic(Context context){
 		list = new ArrayList<Music>();
@@ -97,6 +97,7 @@ public class MusicUtil {
 
 	public static MediaPlayer play(int position){
 		Music music = list.get(position);
+		musicPosition = position;
 		if(mediaPlayer==null){
     		try {
     			mediaPlayer = new MediaPlayer();
@@ -132,6 +133,12 @@ public class MusicUtil {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
+		}
+	}
+
+	public static void start(){
+		if (mediaPlayer != null) {
+			play(musicPosition);
 		}
 	}
 

@@ -30,14 +30,21 @@ public class RemoteControlClientReceiver extends BroadcastReceiver {
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PLAY:
+                    MusicUtil.start();
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                    MusicUtil.pause();
                     break;
                 case KeyEvent.KEYCODE_MEDIA_STOP:
+           //         MusicUtil.stop();
                     break;
                 case KeyEvent.KEYCODE_MEDIA_NEXT:
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
                     break;
             }
 
