@@ -124,6 +124,11 @@ public class MusicUtil {
 	public static void pause(){
 		if(mediaPlayer!=null && mediaPlayer.isPlaying()){
     		mediaPlayer.pause();
+			PlaybackState.Builder  mbuilder = new PlaybackState.Builder();
+			PlaybackState pstate = mbuilder.setState(RemoteControlClient.PLAYSTATE_PAUSED,
+					mediaPlayer.getCurrentPosition(),
+					mediaPlayer.getPlaybackParams().getSpeed() ).build();
+			mediaSession.setPlaybackState(pstate);
     	}
 		
 	}
