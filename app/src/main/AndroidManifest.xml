@@ -23,6 +23,11 @@
                 <action android:name="com.android.ps.service.MusicService" />
             </intent-filter>
         </service>
+        <receiver android:name="RemoteControlClientReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 

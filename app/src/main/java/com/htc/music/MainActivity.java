@@ -1,11 +1,16 @@
 package com.htc.music;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -32,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         MusicSeekbar = (SeekBar) findViewById(R.id.htcMusicSeekBar);
       //  MusicSeekbar.setVisibility(View.GONE);
-        MusicUtil.setMusicbar(mHandler,musicNameView,this,MusicSeekbar);
+        MusicUtil.setInit(mHandler,musicNameView,this,MusicSeekbar);
 
         Musiclist =(ListView)findViewById(R.id.htcMusicList);
         Musiclist.setBackgroundColor(Color.WHITE);
@@ -54,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        ComponentName mComponentName = new ComponentName(this.getPackageName(),RemoteControlClientReceiver.class.getName());
+        int result = audioManager
+                .requestAudioFocus(new MyOnAudioFocusChangeListener(),
+                        AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        audioManager.registerMediaButtonEventReceiver(mComponentName);
+        System.out.println("HTC Music Creat");
 
     }
 
@@ -103,5 +116,29 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    class MyOnAudioFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            switch(focusChange) {
+
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    // 重新获得焦点,  可做恢复播放，恢复后台音量的操作
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    // 永久丢失焦点除非重新主动获取，这种情况是被其他播放器抢去了焦点，  为避免与其他播放器混音，可将音乐暂停
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    // 暂时丢失焦点，这种情况是被其他应用申请了短暂的焦点，可压低后台音量
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    // 短暂丢失焦点，这种情况是被其他应用申请了短暂的焦点希望其他声音能压低音量（或者关闭声音）凸显这个声音（比如短信提示音），
+                    break;
+            }
+        }
+    }
+
+
+
 }
 

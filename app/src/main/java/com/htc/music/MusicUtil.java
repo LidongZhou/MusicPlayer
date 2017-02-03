@@ -154,7 +154,7 @@ public class MusicUtil {
 		return m+":"+n;
 	}
 
-	public static void setMusicbar(android.os.Handler handler, TextView textview, Context context, SeekBar seekBar){
+	public static void setInit(android.os.Handler handler, TextView textview, Context context, SeekBar seekBar){
 		mhandler = handler;
 		mTextView = textview;
 		mcontext = context;
