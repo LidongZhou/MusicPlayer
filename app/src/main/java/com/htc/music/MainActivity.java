@@ -1,9 +1,12 @@
 package com.htc.music;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -31,12 +34,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        requestReadExternalPermission();
+
+    }
+
+    private void  onCreateInit() {
         intentService = new Intent(MainActivity.this,MusicService.class);
 
         TextView musicNameView =(TextView) findViewById(R.id.htcMusicName);
 
         MusicSeekbar = (SeekBar) findViewById(R.id.htcMusicSeekBar);
-      //  MusicSeekbar.setVisibility(View.GONE);
+        //  MusicSeekbar.setVisibility(View.GONE);
         MusicUtil.setInit(mHandler,musicNameView,this,MusicSeekbar);
 
         Musiclist =(ListView)findViewById(R.id.htcMusicList);
@@ -55,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putInt("position", position);
                 intentService.putExtra("bundle", bundle);
 
-               startService(intentService);
+                startService(intentService);
 
             }
         });
@@ -67,9 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         audioManager.registerMediaButtonEventReceiver(mComponentName);
         System.out.println("HTC Music Creat");
-
     }
-
     private ArrayList<Map<String,Object>> getMusicData(){
         ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
         Map<String,Object> map = null;
@@ -117,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+
+
     class MyOnAudioFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {
         @Override
         public void onAudioFocusChange(int focusChange) {
@@ -138,7 +147,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NewApi")
+    private void requestReadExternalPermission() {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+            } else {
+                // 0 是自己定义的请求coude
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+            }
+        } else {
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+
+        switch (requestCode) {
+            case 0: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted
+                    // request successfully, handle you transactions
+                    onCreateInit();
+                } else {
+
+                    // permission denied
+                    // request failed
+                }
+
+                return;
+            }
+            default:
+                break;
+
+        }
+    }
 
 }
 
